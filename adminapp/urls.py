@@ -1,6 +1,6 @@
-from django.urls import re_path
-
 import adminapp.views as adminapp
+
+from django.urls import re_path
 
 from .apps import AdminappConfig
 
