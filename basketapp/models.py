@@ -1,7 +1,6 @@
-from mainapp.models import Product
-
 from django.conf import settings
 from django.db import models
+from mainapp.models import Product
 
 
 class Basket(models.Model):
