@@ -4,8 +4,6 @@ import random
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
 
-from .models import ShopUser
-
 
 class ShopUserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -63,3 +61,4 @@ class ShopUserEditForm(UserChangeForm):
     class Meta:
         model = ShopUser
         fields = ("username", "first_name", "email", "age", "avatar")
+

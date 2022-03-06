@@ -1,9 +1,4 @@
-from authnapp.forms import ShopUserEditForm, ShopUserLoginForm, ShopUserRegisterForm
-from authnapp.models import ShopUser
 
-from django.conf import settings
-from django.contrib import auth
-from django.core.mail import send_mail
 from django.shortcuts import HttpResponseRedirect, render
 from django.urls import reverse
 
@@ -59,13 +54,12 @@ def edit(request):
 
     if request.method == "POST":
         edit_form = ShopUserEditForm(request.POST, request.FILES, instance=request.user)
-        if edit_form.is_valid():
+
             edit_form.save()
             return HttpResponseRedirect(reverse("auth:edit"))
     else:
         edit_form = ShopUserEditForm(instance=request.user)
 
-    content = {"title": title, "edit_form": edit_form, "media_url": settings.MEDIA_URL}
     return render(request, "authnapp/edit.html", content)
 
 
@@ -94,7 +88,7 @@ def verify(request, email, activation_key):
             print(f"user {user} is activated")
             user.is_active = True
             user.save()
-            auth.login(request, user)
+
 
             return render(request, "authnapp/verification.html")
         print(f"error activation user: {user}")
