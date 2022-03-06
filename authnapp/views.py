@@ -49,6 +49,7 @@ def register(request):
     return render(request, "authnapp/register.html", content)
 
 
+
 def edit(request):
     title = "редактирование"
 
@@ -59,6 +60,7 @@ def edit(request):
             return HttpResponseRedirect(reverse("auth:edit"))
     else:
         edit_form = ShopUserEditForm(instance=request.user)
+
 
     return render(request, "authnapp/edit.html", content)
 

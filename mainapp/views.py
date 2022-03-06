@@ -1,6 +1,5 @@
 import random
 
-
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, render
@@ -22,6 +21,7 @@ def main(request):
 def products(request, pk=None, page=1):
     title = "продукты"
     links_menu = ProductCategory.objects.filter(is_active=True)
+
 
             category = {"pk": 0, "name": "все"}
             products = Product.objects.filter(is_active=True, category__is_active=True).order_by("price")
