@@ -1,6 +1,7 @@
 from adminapp.forms import ProductCategoryEditForm, ProductEditForm, ShopUserAdminEditForm
 from authnapp.forms import ShopUserRegisterForm
 from authnapp.models import ShopUser
+
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,7 +10,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
-from mainapp.models import Product, ProductCategory
+
 
 
 @user_passes_test(lambda u: u.is_superuser)
