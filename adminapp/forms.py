@@ -1,8 +1,5 @@
 from authnapp.forms import ShopUserEditForm
 from authnapp.models import ShopUser
-from django import forms
-from mainapp.models import Product, ProductCategory
-
 
 class ShopUserAdminEditForm(ShopUserEditForm):
     class Meta:
