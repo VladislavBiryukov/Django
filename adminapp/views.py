@@ -1,7 +1,6 @@
 from adminapp.forms import ProductCategoryEditForm, ProductEditForm, ShopUserAdminEditForm
 from authnapp.forms import ShopUserRegisterForm
 from authnapp.models import ShopUser
-
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,7 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
-
+from mainapp.models import Product, ProductCategory
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -92,16 +91,29 @@ class ProductCategoryCreateView(LoginRequiredMixin, CreateView):
     fields = "__all__"
 
 
+from django.db.models import F
+
+
 class ProductCategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = ProductCategory
     template_name = "adminapp/category_update.html"
     success_url = reverse_lazy("admin:categories")
-    fields = "__all__"
+    form_class = ProductCategoryEditForm
 
     def get_context_data(self, **kwargs):
         context = super(ProductCategoryUpdateView, self).get_context_data(**kwargs)
         context["title"] = "категории/редактирование"
         return context
+
+    def form_valid(self, form):
+        if "discount" in form.cleaned_data:
+            discount = form.cleaned_data["discount"]
+            if discount:
+                # print(f"применяется скидка {discount}% к товарам категории {self.object.name}")
+                self.object.product_set.update(price=F("price") * (1 - discount / 100))
+                # db_profile_by_type(self.__class__, "UPDATE", connection.queries)
+
+        return super().form_valid(form)
 
 
 class ProductCategoryDeleteView(LoginRequiredMixin, DeleteView):
@@ -113,6 +125,9 @@ class ProductCategoryDeleteView(LoginRequiredMixin, DeleteView):
         self.object = self.get_object()
         self.object.is_active = False
         self.object.save()
+        # for item in self.object.product_set.all():
+        #     item.is_active = False
+        #     item.save()
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -182,3 +197,25 @@ def product_delete(request, pk):
 
     content = {"title": title, "product_to_delete": product, "media_url": settings.MEDIA_URL}
     return render(request, "adminapp/product_delete.html", content)
+
+
+from django.db import connection
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+
+def db_profile_by_type(prefix, type, queries):
+    update_queries = list(filter(lambda x: type in x["sql"], queries))
+    print(f"db_profile {type} for {prefix}:")
+    [print(query["sql"]) for query in update_queries]
+
+
+@receiver(pre_save, sender=ProductCategory)
+def product_is_active_update_productcategory_save(sender, instance, **kwargs):
+    if instance.pk:
+        if instance.is_active:
+            instance.product_set.update(is_active=True)
+        else:
+            instance.product_set.update(is_active=False)
+
+        # db_profile_by_type(sender, "UPDATE", connection.queries)

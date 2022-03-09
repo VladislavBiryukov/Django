@@ -1,5 +1,4 @@
 import mainapp.views as mainapp
-
 from django.urls import re_path
 
 from .apps import MainappConfig
